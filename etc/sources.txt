@@ -3,3 +3,4 @@ https://github.com/yowainwright/awesome-writing-tools
 Best ones:
  - https://github.com/JohannesBuchner/languagecheck
  - http://cliche.theinfo.org/
+ - https://www.linux.com/news/improve-your-writing-gnu-style-checkers/
