@@ -1,3 +1,5 @@
+https://matt.might.net/articles/shell-scripts-for-passive-voice-weasel-words-duplicates
+
 https://github.com/yowainwright/awesome-writing-tools
 
 Best ones:
