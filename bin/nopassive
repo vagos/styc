@@ -60,7 +60,4 @@ fi
 
 grep -E -n -i --color \
  "\\b(am|are|were|being|is|been|was|be)\
-\\b[ ]*(\w+ed|($irregulars))\\b" "$@"
-
-exit $?
-
+\\b[ ]*(\w+ed|($irregulars))\\b" "$@" || [ $? -eq 1 ]
