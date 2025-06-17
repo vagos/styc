@@ -6,3 +6,7 @@ Best ones:
  - https://github.com/JohannesBuchner/languagecheck
  - http://cliche.theinfo.org/
  - https://www.linux.com/news/improve-your-writing-gnu-style-checkers/
+
+
+Semantic formatting:
+  https://github.com/admk/sembr
