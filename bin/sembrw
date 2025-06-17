@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+r"""
+Line-based LaTeX formatter using SemBr.
+Protected lines are:
+  - Starting with backslash (commands)
+  - Containing '&' (tabulars)
+  - Starting with comments '%'
+  - Inside verbatim-like environments: verbatim, minted, lstlisting, Verbatim
+"""
+import sys
+import argparse
+import subprocess
+import re
+
+PUNCT_CHARS = set(',.;:!?)')
+VERBATIM_ENVS = {'verbatim', 'verbatim*', 'minted', 'lstlisting', 'Verbatim'}
+BEGIN_ENV = re.compile(r"^\s*\\begin\{(" + '|'.join(VERBATIM_ENVS) + r")\}")
+END_ENV = re.compile(r"^\s*\\end\{(" + '|'.join(VERBATIM_ENVS) + r")\}")
+
+
+def cleanup_formatted(text: str) -> str:
+    """
+    Merge lines starting with punctuation into previous lines.
+    """
+    lines = text.splitlines()
+    cleaned = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            cleaned.append(line)
+        elif stripped[0] in PUNCT_CHARS:
+            if cleaned:
+                cleaned[-1] = cleaned[-1].rstrip() + stripped
+            else:
+                cleaned.append(line)
+        else:
+            cleaned.append(line)
+    return '\n'.join(cleaned)
+
+
+def format_block(text: str) -> str:
+    if not text.strip():
+        return text  # Return empty blocks as is
+    try:
+        proc = subprocess.run(
+            ['sembr'], input=text.encode('utf-8'), capture_output=True
+        )
+        if proc.returncode != 0:
+            err = proc.stderr.decode('utf-8', errors='ignore')
+            print(f"SemBr error (code {proc.returncode}): {err}", file=sys.stderr)
+            return text
+        formatted = proc.stdout.decode('utf-8', errors='ignore')
+        return cleanup_formatted(formatted)
+    except FileNotFoundError:
+        print("Error: 'sembr' command not found. Please install SemBr on PATH.", file=sys.stderr)
+        sys.exit(1)
+
+
+def process_lines(lines):
+    output_lines = []
+    buffer = []
+    in_verbatim = False
+
+    def flush_buffer():
+        if not buffer:
+            return
+        block = '\n'.join(buffer) + '\n'
+        formatted = format_block(block)
+        output_lines.extend(formatted.rstrip('\n').split('\n'))
+        buffer.clear()
+
+    for line in lines:
+        # Check begin/end of verbatim-like envs
+        if BEGIN_ENV.match(line):
+            in_verbatim = True
+            flush_buffer()
+            output_lines.append(line.rstrip('\n'))
+            continue
+        if END_ENV.match(line):
+            in_verbatim = False
+            output_lines.append(line.rstrip('\n'))
+            continue
+
+        # Determine protected status
+        stripped = line.lstrip()
+        protected = in_verbatim or stripped.startswith('\\') or ('&' in line) or stripped.startswith('%')
+        if protected:
+            flush_buffer()
+            output_lines.append(line.rstrip('\n'))
+        else:
+            buffer.append(line.rstrip('\n'))
+
+    flush_buffer()
+    return output_lines
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Semantic LaTeX formatter using SemBr")
+    parser.add_argument('input', help="Input .tex file")
+    parser.add_argument('-o', '--output', help="Output file (defaults to stdout)")
+    args = parser.parse_args()
+
+    raw_lines = open(args.input, encoding='utf-8').readlines()
+    processed = process_lines(raw_lines)
+    result = '\n'.join(processed) + '\n'
+
+    if args.output:
+        with open(args.output, 'w', encoding='utf-8') as f:
+            f.write(result)
+    else:
+        sys.stdout.write(result)
+
+if __name__ == '__main__':
+    main()
