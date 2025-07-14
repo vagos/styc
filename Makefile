@@ -10,3 +10,6 @@ proof:
 	echo
 	echo "duplicates: "
 	perl bin/nodups *.tex
+	echo
+	echo "gpt-isms: "
+	sh bin/nogptisms *.tex

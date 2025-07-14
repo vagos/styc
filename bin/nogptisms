@@ -1,0 +1,35 @@
+#!/bin/bash
+
+gptisms="seamlessly|ensure|comprehensive|pivotal\
+|delve|embark|notably|tapestry|vital|undoubtedly\
+|synergy|leverage|disrupt|innovative|game-changer"
+
+wordfile=""
+
+# Check for an alternate weasel file
+if [ -f "$HOME"/etc/words/gptisms ]; then
+    wordfile="$HOME/etc/words/gptisms"
+fi
+
+if [ -f "$WORDSDIR"/gptisms ]; then
+    wordfile="$WORDSDIR/gptisms"
+fi
+
+if [ -f words/gptisms ]; then
+    wordfile="words/gptisms"
+fi
+
+if [ ! "$wordfile" = "" ]; then
+    gptisms="xyzabc123";
+    while read -r w; do
+        gptisms="$gptisms|$w"
+    done < "$wordfile"
+fi
+
+
+if [ "$1" = "" ]; then
+ echo "usage: $(basename "$0") <file> ..."
+ exit
+fi
+
+grep -E -i -n --color "\\b($gptisms)\\b" "$@" || [ $? -eq 1 ]
