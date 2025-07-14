@@ -1,8 +1,27 @@
 #!/bin/bash
 
 gptisms="seamlessly|ensure|comprehensive|pivotal\
-|delve|embark|notably|tapestry|vital|undoubtedly\
-|synergy|leverage|disrupt|innovative|game-changer"
+|delve|embark|notable|notably|tapestry|vital|undoubtedly\
+|synergy|leverage|disrupt|innovative|game-changer|moreover\
+|very\
+|pretty\
+|really\
+|quite\
+|rather\
+|somewhat\
+|extremely\
+|slightly|likely|possibly\
+|particularly\
+|fairly\
+|highly\
+|too\
+|enough\
+|almost\
+|just\
+|completely|crucial\
+|absolutely\
+|considerable|considerably\
+|—"
 
 wordfile=""
 
