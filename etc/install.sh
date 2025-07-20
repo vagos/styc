@@ -1,4 +1,6 @@
 git clone https://github.com/vagos/styc
 
-cat styc/Makefile >> Makefile
+(echo ; cat styc/Makefile) >> Makefile
 cp -r styc/bin bin
+
+rm -r styc
