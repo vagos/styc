@@ -1,5 +1,3 @@
-.PHONY proof
-
 # Check style:
 proof:
 	echo "weasel words: "
